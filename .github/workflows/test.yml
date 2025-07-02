@@ -1,0 +1,30 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: node test.js
+
+      - name: Notify n8n if failed
+        if: failure()
+        run: |
+          curl -X POST https://YOUR-N8N-URL/webhook/ci-failure \
+          -H "Content-Type: application/json" \
+          -d '{"log": "${{ steps.run-tests.outcome }}"}'
