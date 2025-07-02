@@ -3,6 +3,8 @@ name: CI
 on:
   push:
     branches: [ main ]
+  repository_dispatch:
+    types: [run_pipeline_telegram]
 
 jobs:
   build:
@@ -32,8 +34,5 @@ jobs:
           curl -X POST https://ihebkraiem.app.n8n.cloud/webhook-test/ci-failure \
             -H "Content-Type: application/json" \
             -d "{\"status\": \"success\", \"logs\": $LOGS}"
-
-
-
 
 
