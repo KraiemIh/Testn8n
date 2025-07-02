@@ -15,14 +15,12 @@ jobs:
         id: test
         run: |
           node test.js 2>&1 | tee test.log
-          test $PIPESTATUS -eq 0
+          test ${PIPESTATUS[0]} -eq 0
 
       - name: Send logs to n8n if failed
         if: failure()
         run: |
-          echo "Sending logs to n8n..."
-          # Récupérer les 100 dernières lignes des logs du job
-          LOGS=$(echo "${{ steps.test.outcome }}" || echo "No test logs")
+          LOGS=$(tail -n 100 test.log | jq -Rs .)
           curl -X POST https://ihebkraiem.app.n8n.cloud/webhook-test/ci-failure \
             -H "Content-Type: application/json" \
-            -d "{\"logs\": \"$LOGS\"}"
+            -d "{\"logs\": $LOGS}"
