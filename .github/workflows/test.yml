@@ -24,3 +24,11 @@ jobs:
           curl -X POST https://ihebkraiem.app.n8n.cloud/webhook-test/ci-failure \
             -H "Content-Type: application/json" \
             -d "{\"logs\": $LOGS}"
+                  - name: Send success to n8n
+        if: success()
+        run: |
+          LOGS=$(tail -n 100 test.log | jq -Rs .)
+          curl -X POST https://ihebkraiem.app.n8n.cloud/webhook-test/ci-failure \
+            -H "Content-Type: application/json" \
+            -d "{\"status\": \"success\", \"logs\": $LOGS}"
+
