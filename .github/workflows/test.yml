@@ -1,4 +1,4 @@
-name: Run Tests
+name: CI
 
 on:
   push:
@@ -7,24 +7,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm install
+      - uses: actions/checkout@v3
 
       - name: Run tests
-        run: node test.js
+        id: test
+        run: |
+          # Simule un test qui peut échouer
+          npm install
+          npm test
 
-      - name: Notify n8n if failed
+      - name: Send logs to n8n if failed
         if: failure()
         run: |
-          curl -X POST https://YOUR-N8N-URL/webhook/ci-failure \
-          -H "Content-Type: application/json" \
-          -d '{"log": "${{ steps.run-tests.outcome }}"}'
+          echo "Sending logs to n8n..."
+          LOGS=$(tail -n 100 ./test.log || echo "No test log")
+          curl -X POST https://ihebkraiem.app.n8n.cloud/webhook-test/ci-failure \
+            -H "Content-Type: application/json" \
+            -d "{\"logs\": \"$LOGS\"}"
