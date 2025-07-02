@@ -33,3 +33,4 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"status\": \"success\", \"logs\": $LOGS}"
 
+
